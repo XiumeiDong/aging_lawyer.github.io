@@ -5,7 +5,6 @@ An interactive scrollytelling website exploring the demographics of aging lawyer
 **Features:**  
 - Scroll-triggered chart updates  
 - Embedded Datawrapper visualizations  
-- Pandemic impact info for missing 2020 data  
 - Interactive quiz with instant feedback and confetti  
 
 Built with HTML, CSS, JavaScript, GSAP ScrollTrigger, and Canvas-Confetti.  
