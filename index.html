@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aging Lawyers in the U.S. — Scrollytelling</title>
+
+<!-- Fonts & icons (system fallback) -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+  :root{
+    --brand:#003366;
+    --accent:#007acc;
+    --muted:#6b7280;
+    --bg:#f7fbff;
+    --card:#ffffff;
+    --glass: rgba(255,255,255,0.7);
+    --radius:14px;
+    --maxWidth:1100px;
+  }
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,#f6fbff 0%, #f9f9f9 100%);
+    color:#0f1724;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    scroll-behavior:smooth;
+  }
+
+  header{
+    background: linear-gradient(90deg,var(--brand), #004785);
+    color:white;
+    padding:2.2rem 1.2rem;
+    text-align:center;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+  }
+  header h1{margin:0; font-size:1.75rem; letter-spacing:-0.4px;}
+  header p{margin:6px 0 0; opacity:0.95;}
+
+  .container{
+    max-width:var(--maxWidth);
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display:grid;
+    grid-template-columns: 1fr 420px;
+    gap: 2rem;
+    align-items:start;
+  }
+
+  /* Scrolly left text column */
+  .scrolly {
+    position:relative;
+  }
+  .scrolly .sections{
+    display:flex;
+    flex-direction:column;
+    gap:3.2rem;
+    padding-right:1rem;
+  }
+  .step{
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.98));
+    border-radius:12px;
+    padding:1.2rem 1.3rem;
+    box-shadow: 0 8px 24px rgba(10,20,40,0.06);
+    transform-origin:left center;
+  }
+  .step h2{margin:0 0 .4rem; font-size:1.05rem;}
+  .step p{margin:0; color:var(--muted); line-height:1.5;}
+
+  /* Pinned chart column */
+  .chart-panel{
+    position:sticky;
+    top:1.6rem;
+    height:calc(100vh - 3.2rem);
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+    align-items:stretch;
+  }
+  .chart-card{
+    background:var(--card);
+    border-radius:12px;
+    padding:12px;
+    box-shadow: 0 8px 30px rgba(10,20,40,0.06);
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    position:relative;
+  }
+  #chartFrame{
+    flex:1 1 auto;
+    width:100%;
+    border:0;
+    min-height:260px;
+    border-radius:8px;
+  }
+  .chart-controls{
+    display:flex;
+    gap:.5rem;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:8px;
+  }
+  .chart-controls .label{font-size:.9rem; color:var(--muted);}
+
+  /* Sticky facts */
+  .sticky-facts{
+    margin-top:1rem;
+    background: linear-gradient(180deg, rgba(0,122,204,0.06), rgba(255,255,255,0.7));
+    border-radius:10px;
+    padding:.7rem;
+    font-size:.9rem;
+    color:#042033;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+
+  /* Quiz section (full width in left column) */
+  .quiz{
+    border-radius:12px;
+    padding:1rem;
+    background: linear-gradient(180deg,#e6f0ff,#ffffff);
+    box-shadow:0 8px 24px rgba(0,60,120,0.06);
+  }
+  .quiz h3{margin:0 0 .5rem;}
+  .q{margin-bottom:.8rem;}
+  .answers label{display:block; margin:.3rem 0; cursor:pointer;}
+  .btn{
+    background:var(--brand);
+    color:white;
+    border:0;
+    padding:.6rem .9rem;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .scorebar{
+    display:flex;
+    gap:.5rem;
+    align-items:center;
+    margin-bottom:.8rem;
+  }
+  .score{
+    background:#e6eefc;
+    padding:.35rem .6rem;
+    border-radius:8px;
+    font-weight:700;
+    color:var(--brand);
+  }
+
+  /* Modal */
+  .modal-backdrop{
+    position:fixed; inset:0; display:none; background:rgba(2,6,23,0.6); z-index:999;
+    align-items:center; justify-content:center; padding:1.2rem;
+  }
+  .modal{
+    background:white; border-radius:12px; max-width:520px; width:100%; padding:1.1rem 1.2rem; box-shadow:0 12px 40px rgba(3,12,30,0.35);
+  }
+  .modal h4{margin:0 0 .4rem;}
+  .close-x{position:absolute; right:12px; top:8px; background:transparent; border:0; font-size:1.4rem; cursor:pointer;}
+
+  /* Tiny helpers */
+  .muted{color:var(--muted);}
+  .kicker{font-size:.86rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:.4rem;}
+  .big-number{font-size:2.1rem; font-weight:800; color:var(--brand); margin:.35rem 0;}
+  footer{max-width:var(--maxWidth); margin:2rem auto; padding:0 1rem; color:var(--muted); font-size:.9rem;}
+
+  /* Responsive */
+  @media (max-width:1024px){
+    .container{grid-template-columns:1fr; padding-bottom:2rem;}
+    .chart-panel{position:relative; top:auto; height:auto;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Aging Lawyers in the U.S.</h1>
+  <p>Exploring the demographics of an aging profession — scroll to reveal the story</p>
+</header>
+
+<main class="container" role="main">
+  <!-- Left: scrolly text -->
+  <section class="scrolly" aria-label="Story text">
+    <div class="sections" id="scrollySections">
+
+      <article class="step" data-src="https://datawrapper.dwcdn.net/RVTjq/1/" id="step-1" tabindex="0" aria-labelledby="step1-title">
+        <div class="kicker">Overview</div>
+        <h2 id="step1-title">Lawyers are older than most U.S. workers</h2>
+        <p>
+          Lawyers in the U.S. are older than most workers. In 2024, their median age was <strong class="big-number" data-count="46.3">46.3</strong>, while the average for all workers was <strong class="muted">42.2</strong>. Keep scrolling to see how this changed over the last decade and where senior lawyers are concentrated.
+        </p>
+      </article>
+
+      <article class="step" data-src="https://datawrapper.dwcdn.net/yQxAJ/1/" id="step-2" tabindex="0" aria-labelledby="step2-title">
+        <div class="kicker">Trend</div>
+        <h2 id="step2-title">Senior lawyer representation over a decade</h2>
+        <p>
+          Over the last ten years the share of senior lawyers has shifted. The chart in the panel to the right will update as you move through each section to highlight the change. Use the "Pandemic Impact" button in the chart panel for context on missing 2020 data.
+        </p>
+      </article>
+
+      <article class="step" data-src="https://datawrapper.dwcdn.net/Rkog8/1/" id="step-3" tabindex="0" aria-labelledby="step3-title">
+        <div class="kicker">Gender</div>
+        <h2 id="step3-title">Where are the senior lawyers?</h2>
+        <p>
+          A map shows which states have higher proportions of senior lawyers. Hover or tap a state in the interactive map (if available) to reveal more. 
+        </p>
+      </article>
+
+      <article class="step" data-src="https://datawrapper.dwcdn.net/09TBL/1/" id="step-4" tabindex="0" aria-labelledby="step4-title">
+        <div class="kicker">Race & Ethnicity</div>
+        <h2 id="step4-title">Racial breakdown of senior lawyers</h2>
+        <p>
+          Senior lawyers are disproportionately white compared with the U.S. workforce. The pie chart in the right-hand panel shows the distribution from 2022, as the latest data is not yet available.
+        </p>
+      </article>
+
+      <article class="step" id="step-5" tabindex="0" aria-labelledby="step5-title">
+        <div class="kicker">Context</div>
+        <h2 id="step5-title">Missing 2020 Census data</h2>
+        <p>
+          The COVID-19 pandemic disrupted detailed 2020 Census outputs, creating a gap in year-to-year trend analysis. Click the "Pandemic Impact" button in the chart card to learn more.
+        </p>
+      </article>
+
+      <article class="step quiz" id="quiz-section" tabindex="0" aria-labelledby="quiz-title">
+        <h3 id="quiz-title">Quiz Time! — Score: <span class="score" id="scoreDisplay">0</span>/3</h3>
+
+        <div class="q" id="q1">
+          <p><strong>1.</strong> What was the median age of U.S. lawyers in 2024?</p>
+          <div class="answers">
+            <label><input type="radio" name="q1" value="42.2"> 42.2</label>
+            <label><input type="radio" name="q1" value="46.3"> 46.3</label>
+            <label><input type="radio" name="q1" value="50.1"> 50.1</label>
+          </div>
+          <div style="margin-top:6px;">
+            <button class="btn" data-q="1">Submit</button>
+            <span id="res1" class="muted" style="margin-left:10px;"></span>
+          </div>
+        </div>
+
+        <div class="q" id="q2">
+          <p><strong>2.</strong> Which state has the highest number of senior lawyers as of 2024?</p>
+          <div class="answers">
+            <label><input type="radio" name="q2" value="California"> California</label>
+            <label><input type="radio" name="q2" value="New York"> New York</label>
+            <label><input type="radio" name="q2" value="Texas"> Texas</label>
+          </div>
+          <div style="margin-top:6px;">
+            <button class="btn" data-q="2">Submit</button>
+            <span id="res2" class="muted" style="margin-left:10px;"></span>
+          </div>
+        </div>
+
+        <div class="q" id="q3">
+          <p><strong>3.</strong> Over the past decade, how has the proportion of senior lawyers in the U.S. changed?</p>
+          <div class="answers">
+            <label><input type="radio" name="q3" value="Increased"> Increased</label>
+            <label><input type="radio" name="q3" value="Decreased"> Decreased</label>
+            <label><input type="radio" name="q3" value="Stayed the same"> Stayed the same</label>
+          </div>
+          <div style="margin-top:6px;">
+            <button class="btn" data-q="3">Submit</button>
+            <span id="res3" class="muted" style="margin-left:10px;"></span>
+          </div>
+        </div>
+
+        <p class="muted" style="margin-top:8px;font-size:.9rem;">Tip: correct answers trigger a confetti burst 🎉</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Right: pinned chart and facts -->
+  <aside class="chart-panel" aria-label="Charts and controls">
+    <div class="chart-card" aria-live="polite">
+      <div style="display:flex; gap:12px; align-items:center;">
+        <div style="flex:1;">
+          <div class="label" style="font-weight:700; color:var(--brand);">Interactive chart</div>
+          <div class="muted" style="font-size:.9rem;">Changes as you scroll the story</div>
+        </div>
+        <div style="display:flex; gap:.5rem; align-items:center;">
+          <button id="infoBtn" class="btn" aria-haspopup="dialog" aria-controls="modal" title="Pandemic impact info">Pandemic Impact</button>
+        </div>
+      </div>
+
+      <iframe id="chartFrame" title="Pinned chart" src="https://datawrapper.dwcdn.net/RVTjq/1/" aria-label="Interactive chart frame"></iframe>
+
+      <div class="chart-controls">
+        <div class="label">Chart source: Datawrapper</div>
+        <div>
+          <select id="chartSelect" aria-label="Choose chart" style="border-radius:8px; padding:.4rem;">
+            <option value="https://datawrapper.dwcdn.net/RVTjq/1/">Median age: Lawyers vs All workers</option>
+            <option value="https://datawrapper.dwcdn.net/yQxAJ/1/">Senior Lawyer Representation Over Time</option>
+            <option value="https://datawrapper.dwcdn.net/Rkog8/1/">Where Are Senior Lawyers?</option>
+            <option value="https://datawrapper.dwcdn.net/09TBL/1/">Racial Breakdown of Senior Lawyers</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="sticky-facts" aria-hidden="false">
+      <strong>Did you know?</strong>
+      <ul style="margin:.5rem 0 0 1rem; padding:0; color:var(--muted);">
+        <li>Median age of lawyers: <strong>46.3 (2024)</strong>.</li>
+        <li>Average for all workers: <strong>42.2 (2024)</strong>.</li>
+        <li>2020 Census outputs were disrupted — trends around that year should be interpreted carefully.</li>
+      </ul>
+    </div>
+  </aside>
+</main>
+
+<!-- Modal for pandemic / info -->
+<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+  <div class="modal" role="document">
+    <button class="close-x" id="closeModal" aria-label="Close">×</button>
+    <h4 id="modalTitle">Missing 2020 Census Data</h4>
+    <p class="muted">
+      Due to disruptions caused by COVID-19, some detailed 2020 Census outputs for occupation subgroups were delayed or not released in the usual form. This creates a gap in the year-to-year trend analysis for that period and may affect comparisons that rely on consistent yearly reporting.
+    </p>
+    <p style="margin-top:.6rem;">
+      <strong>Quick tips for readers:</strong> look for multi-year averages or rolling trends when evaluating the 2019–2021 period to reduce the impact of missing single-year data.
+    </p>
+  </div>
+</div>
+
+<footer>
+  <div style="max-width:var(--maxWidth); margin:auto; text-align:center;">
+    Data visualizations embedded from Datawrapper. Built with GSAP ScrollTrigger and a sprinkle of confetti ✨.
+  </div>
+</footer>
+
+<!-- Libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" integrity="" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+  // ---------- Basic setup ----------
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Count-up for numbers with decimals
+  function countUp(el){
+    const target = parseFloat(el.dataset.count);
+    if(isNaN(target)) return;
+    let start = 0;
+    const duration = 1.2;
+    const startTime = performance.now();
+    function step(now){
+      const t = Math.min(1, (now - startTime) / (duration * 1000));
+      const val = start + (target - start) * t;
+      el.textContent = val.toFixed(1);
+      if(t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Animate steps in with ScrollTrigger
+  document.querySelectorAll('.step').forEach((step, idx) => {
+    gsap.from(step, {
+      y: 30, opacity: 0, duration: 0.7, delay: 0,
+      scrollTrigger: {
+        trigger: step,
+        start: "top 80%",
+        toggleActions: "play none none reverse"
+      }
+    });
+
+    // when step enters, update pinned chart iframe if it has a data-src
+    const src = step.dataset.src;
+    if(src){
+      ScrollTrigger.create({
+        trigger: step,
+        start: "top center",
+        onEnter: () => updateChart(src),
+        onEnterBack: () => updateChart(src)
+      });
+    }
+
+    // if has number, animate when visible
+    const bigNum = step.querySelector('[data-count]');
+    if(bigNum){
+      ScrollTrigger.create({
+        trigger: step,
+        start: "top 85%",
+        onEnter: () => { if(!bigNum.dataset.counted){ countUp(bigNum); bigNum.dataset.counted = "1"; } }
+      });
+    }
+  });
+
+  // Fallback: when page loads show first chart
+  function updateChart(src){
+    const iframe = document.getElementById('chartFrame');
+    if(iframe.src !== src) {
+      // small fade exchange
+      gsap.to(iframe, {opacity:0, duration:0.25, onComplete: () => {
+        iframe.src = src;
+        gsap.to(iframe, {opacity:1, duration:0.35});
+      }});
+    }
+  }
+
+  // Also let select control chart
+  document.getElementById('chartSelect').addEventListener('change', (e) => {
+    updateChart(e.target.value);
+  });
+
+  // Modal behavior
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const infoBtn = document.getElementById('infoBtn');
+  const closeModal = document.getElementById('closeModal');
+
+  infoBtn.addEventListener('click', () => {
+    modalBackdrop.style.display = 'flex';
+    modalBackdrop.focus();
+  });
+  closeModal.addEventListener('click', () => modalBackdrop.style.display = 'none');
+  modalBackdrop.addEventListener('click', (ev) => {
+    if(ev.target === modalBackdrop) modalBackdrop.style.display = 'none';
+  });
+  document.addEventListener('keydown', (ev) => {
+    if(ev.key === 'Escape') modalBackdrop.style.display = 'none';
+  });
+
+  // ---------- Quiz logic with confetti ----------
+  const correctAnswers = {1:'46.3', 2:'California', 3:'Increased'};
+  let score = 0;
+  const scoreDisplay = document.getElementById('scoreDisplay');
+
+  function fireConfetti(){
+    confetti({
+      particleCount: 60,
+      spread: 55,
+      origin: { y: 0.6 }
+    });
+  }
+
+  document.querySelectorAll('.quiz .btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const q = btn.dataset.q;
+      const chosen = document.querySelector(`input[name="q${q}"]:checked`);
+      const resEl = document.getElementById(`res${q}`);
+      if(!chosen){
+        resEl.textContent = "Please select an answer.";
+        resEl.style.color = "crimson";
+        return;
+      }
+      if(chosen.value === correctAnswers[q]){
+        // correct
+        if(resEl.dataset.done !== "1"){
+          score += 1;
+          scoreDisplay.textContent = score;
+        }
+        resEl.textContent = "Correct!";
+        resEl.style.color = "#0a8a00";
+        resEl.dataset.done = "1";
+        fireConfetti();
+      } else {
+        if(resEl.dataset.done !== "1"){
+          resEl.textContent = "Oops! Try again.";
+          resEl.style.color = "crimson";
+        } else {
+          // already answered correctly previously
+          resEl.textContent = "Already correct!";
+          resEl.style.color = "#0a8a00";
+        }
+      }
+    });
+  });
+
+  // Accessibility: keyboard focus reveals chart for a step
+  document.querySelectorAll('.step').forEach(step => {
+    step.addEventListener('focus', () => {
+      const src = step.dataset.src;
+      if(src) updateChart(src);
+    });
+  });
+
+  // Small UX: if user navigates by selecting an option that implies changing chart, update select
+  const selectorsMap = {
+    "https://datawrapper.dwcdn.net/RVTjq/1/": 0,
+    "https://datawrapper.dwcdn.net/yQxAJ/1/": 1,
+    "https://datawrapper.dwcdn.net/Rkog8/1/": 2,
+    "https://datawrapper.dwcdn.net/09TBL/1/": 3
+  };
+  const iframe = document.getElementById('chartFrame');
+  iframe.addEventListener('load', () => {
+    const src = iframe.src;
+    const select = document.getElementById('chartSelect');
+    if(select && selectorsMap[src] !== undefined) select.selectedIndex = selectorsMap[src];
+  });
+
+  // Initial small reveal animation
+  gsap.from('header', {y:-20, opacity:0, duration:0.7});
+  gsap.from('.chart-card', {scale:0.99, opacity:0, duration:0.6, delay:0.15});
+
+</script>
+
+</body>
+</html>
